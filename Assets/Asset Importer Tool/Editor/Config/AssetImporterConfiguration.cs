@@ -9,20 +9,30 @@ namespace AssetImporterToolkit
     // Asset imorter configuration scriptable object class.
     public class AssetImporterConfiguration : ScriptableObject
     {
-        // A list of folder direcories that are included for pre processing.
-        [Space(3)]
-        public List<string> m_IncludedAssetDirectory = new List<string>();
+        // Texture settings region.
+        #region Texture settings
 
         // Texture importer settings inspector header.
         [Space(3)]
         [Header("Texture Importer Settings")]
 
+        // Maximum texture size option.
         [Space(3)]
-        public Texture m_TextureImporterSettings;
+        public TextureSizeOption MaximumTextureSize;
+
+        // Anisotropic filtering level value.
+        [Space(3)]
+        [Range(0, 16)]
+        public int AnisotropicFilteringLevel;
 
         // Overide texture settings for selected a runtime platform.
         [Space(3)]
-        public PlatformOption m_TextureOveridePlatormOption = PlatformOption.Android;
+        public PlatformOption m_TextureOveridePlatormOption;
+
+        #endregion // Ending texture settings region.
+
+        // Audio settings region.
+        #region Audio settings
 
         // Audio importer settings inspector header.
         [Space(3)]
@@ -30,25 +40,44 @@ namespace AssetImporterToolkit
 
         // Audio clip load option types.
         [Space(3)]
-        public AudioClipLoadType m_LoadType;
+        public AudioClipLoadType LoadType;
 
         // Imported audio compression format options
         [Space(3)]
-        public AudioCompressionFormat m_CompressionFormat;
+        public AudioCompressionFormat CompressionFormat;
 
         // Imported audio clip sample rate options
         [Space(3)]
-        public AudioSampleRateSetting m_SampleRate;
+        public AudioSampleRateSetting SampleRate;
 
         // Overide audio settings for a selected runtime platform.
         [Space(3)]
-        public PlatformOption m_AudioOveridePlatormOption = PlatformOption.Android;
+        public PlatformOption AudioOveridePlatormOption;
+
+        #endregion // Ended Audio settings region
+
+        // Asset directories function region.
+        #region Asset directories
+
+        // Directories importer settings header.
+        [Space(3)]
+        [Header("Importer Configuration Directories")]
+
+        // A list of folder direcories that are included for pre processing.
+        [Space(3)]
+        public List<string> IncludedAssetDirectory = new List<string>();
 
         // Setting default asset importer configuration directory.
-        public void DefaultAssetImportConfigurationDirectory(string path)
+        public void AssetImporterConfigurationDirectory(string path)
         {
-            // Assigning the default path to the asset importer 
-            m_IncludedAssetDirectory.Add(path);
+            // Check if path doesn't exist
+            if(!IncludedAssetDirectory.Contains(path))
+            {
+                // Assigning the default path to the asset importer.
+                IncludedAssetDirectory.Add(path);
+            }
         }
+
+        #endregion // Ended asset directories function region.
     }
 }
