@@ -5,14 +5,13 @@ using UnityEditor;
 // Namespace
 namespace AssetImporterToolkit
 {
-    // Asset import directory class
-    public class AssetImportDirectory
+    // Asset import directories class
+    public static class AssetImportDirectory
     {
-        // Get Get Asset Directory
+        // Getting a asset directory from a given path
         public static string GetAssetDirectory(string path) => Path.GetDirectoryName(path);
 
-        // Find Asset
+        // Finding existing import configuration asset using filters 
         public static string[] FindImportConfigurations(string filter) => AssetDatabase.FindAssets(filter);
     }
-
 }

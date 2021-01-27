@@ -1,10 +1,10 @@
 ﻿// Namespace
 namespace AssetImporterToolkit
 {
-    // Configuration overide platform names
+    // Platform name options
     public enum PlatformOption
     {
-        //  List of options for platform settings overide 
-        Android, iOS, Standalone, PSP2, PS4, WebGL, Webplayer, XBoxOne, None
+        // A list of platform names
+        None, Android, iOS, Standalone, PSP2, PS4, WebGL, Webplayer, XBoxOne
     }
 }
