@@ -6,20 +6,24 @@ using UnityEditor;
 namespace AssetImporterToolkit
 {
     // Asset importer configuration editor class.
+    [CustomEditor(typeof(AssetImporterConfiguration))]
     public class AssetImporterConfigEditor : Editor
     {
+        // Configuration Asset Path Library
+        public static ConfigurationAssetLibrary configurationAssetLibrary;
+
         // Import configuration asset path.
-        public static string ImportConfigurationPath;
+        private const string LocalConfigurationAssetLibraryPath = "Assets/Asset Importer Tool/Editor/Library/Asset Library.asset";
 
         // Create a new scriptable object import configuration file.
         [MenuItem("24 Bit Games/Asset Importer/Create Configuration Asset")]
         private static void CreateImportConfiguration()
         {
             // Creating a new importer configuration instance.
-            AssetImporterConfiguration importerConfiguration = CreateInstance<AssetImporterConfiguration>();
+            var importerConfiguration = CreateInstance<AssetImporterConfiguration>();
 
             // Getting the path to save newely created scriptable object import configuration asset.
-            ImportConfigurationPath =  EditorUtility.SaveFilePanelInProject("Asset Importer", "Asset Import Configuration", "asset", "");
+            string ImportConfigurationPath =  EditorUtility.SaveFilePanelInProject("Asset Importer", "Asset Import Configuration", "asset", "");
 
             // Check if the importer configuration instance and the asset save path exist.
             if(importerConfiguration && !string.IsNullOrEmpty(ImportConfigurationPath))
@@ -47,6 +51,17 @@ namespace AssetImporterToolkit
                     }
                 }
 
+                // Configuration asset library
+                if (!configurationAssetLibrary)
+                {
+                    // Configuration Asset Library
+                    configurationAssetLibrary = AssetDatabase.LoadAssetAtPath<ConfigurationAssetLibrary>(LocalConfigurationAssetLibraryPath);
+                }
+
+                // Adding configuration asset path to library
+                configurationAssetLibrary.AddConfigurationAssetPathToLibrary(ImportConfigurationPath);
+
+
                 // Log successs
                 Debug.Log("A new import configuration asset file was successfully created at path : " + ImportConfigurationPath);
             }
@@ -57,6 +72,20 @@ namespace AssetImporterToolkit
 
                 // Return from function
                 return;
+            }
+        }
+
+        // On inspector GUI method
+        public override void OnInspectorGUI()
+        {
+            // Calling thebinspector gui base
+            base.OnInspectorGUI();
+
+            // Checking if the assets update 
+            if (GUILayout.Button("Update Assets", GUILayout.Height(25)))
+            {
+                // Log
+                Debug.Log("Update Something...");
             }
         }
     }

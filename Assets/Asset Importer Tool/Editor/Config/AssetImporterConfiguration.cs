@@ -18,7 +18,7 @@ namespace AssetImporterToolkit
 
         // Maximum texture size option.
         [Space(3)]
-        public TextureSizeOption MaximumTextureSize;
+        public TextureSizeOption MaximumTextureSize = TextureSizeOption._1024;
 
         // Anisotropic filtering level value.
         [Space(3)]

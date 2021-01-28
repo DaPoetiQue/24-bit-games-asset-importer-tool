@@ -56,9 +56,6 @@ namespace AssetImporterToolkit
                             // Checking if the asset directory is contained in the included asset directory.
                             if (importConfiguration.IncludedAssetDirectory.Contains(assetDirectory))
                             {
-                                // Log
-                                Debug.Log("Folder at path : " + assetDirectory + " is included.");
-
                                 // --Return a configuration.
                                 return importConfiguration;
                             }
