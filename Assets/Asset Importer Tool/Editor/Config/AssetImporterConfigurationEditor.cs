@@ -9,11 +9,8 @@ namespace AssetImporterToolkit
     [CustomEditor(typeof(AssetImporterConfiguration))]
     public class AssetImporterConfigEditor : Editor
     {
-        // Configuration Asset Path Library
-        public static ConfigurationAssetLibrary configurationAssetLibrary;
-
-        // Import configuration asset path.
-        private const string LocalConfigurationAssetLibraryPath = "Assets/Asset Importer Tool/Editor/Library/Asset Library.asset";
+        // current configuration asset
+        private AssetImporterConfiguration currentConfigurationAsset;
 
         // Create a new scriptable object import configuration file.
         [MenuItem("24 Bit Games/Asset Importer/Create Configuration Asset")]
@@ -51,17 +48,6 @@ namespace AssetImporterToolkit
                     }
                 }
 
-                // Configuration asset library
-                if (!configurationAssetLibrary)
-                {
-                    // Configuration Asset Library
-                    configurationAssetLibrary = AssetDatabase.LoadAssetAtPath<ConfigurationAssetLibrary>(LocalConfigurationAssetLibraryPath);
-                }
-
-                // Adding configuration asset path to library
-                configurationAssetLibrary.AddConfigurationAssetPathToLibrary(ImportConfigurationPath);
-
-
                 // Log successs
                 Debug.Log("A new import configuration asset file was successfully created at path : " + ImportConfigurationPath);
             }
@@ -75,6 +61,7 @@ namespace AssetImporterToolkit
             }
         }
 
+
         // On inspector GUI method
         public override void OnInspectorGUI()
         {
@@ -84,8 +71,34 @@ namespace AssetImporterToolkit
             // Checking if the assets update 
             if (GUILayout.Button("Update Assets", GUILayout.Height(25)))
             {
-                // Log
-                Debug.Log("Update Something...");
+                // Getting selected asset
+                AssetImporterConfiguration[] configurationAsset = Selection.GetFiltered<AssetImporterConfiguration>(SelectionMode.Assets);
+
+                // Checking if has a configuration asset selected
+                if (configurationAsset.Length > 0)
+                {
+                    // Assigning currently selected configuration asset 
+                    currentConfigurationAsset = configurationAsset[0];
+
+                    // Check if has current configuration asset
+                    if(currentConfigurationAsset)
+                    {
+                        // Log
+                        Debug.Log("Updating : " + currentConfigurationAsset.IncludedAssetDirectory.Count + " Directories");
+                    }
+                    else
+                    {
+                        // Log
+                        Debug.Log("No asset selected");
+                    }
+                }
+                else
+                {
+                    // Log
+                    Debug.Log("No Selection");
+                }
+
+               
             }
         }
     }
