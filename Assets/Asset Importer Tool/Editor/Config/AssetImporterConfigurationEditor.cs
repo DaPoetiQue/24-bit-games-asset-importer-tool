@@ -9,9 +9,6 @@ namespace AssetImporterToolkit
     [CustomEditor(typeof(AssetImporterConfiguration))]
     public class AssetImporterConfigEditor : Editor
     {
-        // current configuration asset
-        private AssetImporterConfiguration currentConfigurationAsset;
-
         // Create a new scriptable object import configuration file.
         [MenuItem("24 Bit Games/Asset Importer/Create Configuration Asset")]
         private static void CreateImportConfiguration()
@@ -61,7 +58,6 @@ namespace AssetImporterToolkit
             }
         }
 
-
         // On inspector GUI method
         public override void OnInspectorGUI()
         {
@@ -71,34 +67,47 @@ namespace AssetImporterToolkit
             // Checking if the assets update 
             if (GUILayout.Button("Update Assets", GUILayout.Height(25)))
             {
-                // Getting selected asset
+                // Getting he currently selected configuration asset file in the project window
                 AssetImporterConfiguration[] configurationAsset = Selection.GetFiltered<AssetImporterConfiguration>(SelectionMode.Assets);
 
                 // Checking if has a configuration asset selected
                 if (configurationAsset.Length > 0)
                 {
-                    // Assigning currently selected configuration asset 
-                    currentConfigurationAsset = configurationAsset[0];
+                    // Updating imported assets retroactively using the currently selected configuration asset at the first index
+                    OnImportedAssetsConfigurationUpdate(configurationAsset[0]);
+                }
+                else
+                {
+                    // Log a new error message
+                    Debug.LogError("Configuration asset invalid/not found.");
+                }
+            }
+        }
 
-                    // Check if has current configuration asset
-                    if(currentConfigurationAsset)
+        // Used to update assets retroactively
+        public void OnImportedAssetsConfigurationUpdate(AssetImporterConfiguration configurationAsset)
+        {
+            // Checking if a configuration asset exist
+            if (configurationAsset)
+            {
+                // Checking if there are included asset directories for the current selected configuration asset
+                if (configurationAsset.IncludedAssetDirectory.Count > 0)
+                {
+                    // Looping through included directories
+                    for (int i = 0; i < configurationAsset.IncludedAssetDirectory.Count; i++)
                     {
-                        // Log
-                        Debug.Log("Updating : " + currentConfigurationAsset.IncludedAssetDirectory.Count + " Directories");
-                    }
-                    else
-                    {
-                        // Log
-                        Debug.Log("No asset selected");
+                        // Reimport assets from the included folders
+                        AssetsReimporter.OnReimportAssetsAtPath(configurationAsset.IncludedAssetDirectory[i]);
                     }
                 }
                 else
                 {
-                    // Log
-                    Debug.Log("No Selection");
-                }
+                    // Log a new warning
+                    Debug.LogWarning("There are currently no included asset directories to update.");
 
-               
+                    // Returning from this function
+                    return;
+                }
             }
         }
     }

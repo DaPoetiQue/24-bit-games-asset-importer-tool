@@ -1,4 +1,7 @@
-﻿// Namespace
+﻿// Libraries
+using System;
+
+// Namespace
 namespace AssetImporterToolkit
 {
     // Platform name options

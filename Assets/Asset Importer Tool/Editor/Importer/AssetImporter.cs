@@ -18,6 +18,9 @@ namespace AssetImporterToolkit
         // On pre process texture assets.
         public void OnPreprocessTexture()
         {
+            // Log
+            Debug.Log("Imported Texture");
+
             // Getting import configuration asset file for the imported texture asset.
             importConfiguration = Configurations.GetAssetImportConfiguration(assetPath);
 
@@ -62,6 +65,9 @@ namespace AssetImporterToolkit
         // Preprocessing imported audio assets
         public void OnPreprocessAudio()
         {
+            // Log
+            Debug.Log("Imported Audio");
+
             // Getting import Configuration asset file for the imported audio asset.
             importConfiguration = Configurations.GetAssetImportConfiguration(assetPath);
 
@@ -108,8 +114,16 @@ namespace AssetImporterToolkit
         // On pre process assets
         public void OnPreprocessAsset()
         {
-            // Log
-            // Debug.Log("Asset pre processed");
+            // Checking if settings are missing
+            if(assetImporter.importSettingsMissing)
+                return;
+
+            // Getting asset type
+            Debug.Log("Imported asset of : " + assetImporter.name);
+
+            // Get Asset
+            // AudioImporter audioImporter = assetImporter as AudioImporter;
+
         }
 
         // --On post process all assets

@@ -16,6 +16,13 @@ namespace AssetImporterToolkit
         // Finding existing import configuration asset using filters 
         public static string[] FindImportConfigurations(string filter) => AssetDatabase.FindAssets(filter);
 
+        // Getting asset path from asset guid
+        public static string GetAssetPathFromGuid(string assetGuid)
+        {
+            // Return
+            return AssetDatabase.GUIDToAssetPath(assetGuid);
+        }
+
         // Find asset of type
         public static List<T> FindAssetsByType <T>() where T : Object
         {
