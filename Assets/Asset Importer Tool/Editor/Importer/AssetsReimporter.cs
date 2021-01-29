@@ -25,6 +25,9 @@ namespace AssetImporterToolkit
                 // Looping through found assets
                 for (int i = 0; i < fileEntriesToPathArray.Length; i++)
                 {
+                    // Reimport asset
+                    AssetDatabase.ImportAsset(fileEntriesToPathArray[i]);
+
                     // Log
                     Debug.Log("Updating asset : " + fileEntriesToPathArray[i]);
                 }
@@ -32,7 +35,7 @@ namespace AssetImporterToolkit
             else
             {
                 // Log
-                Debug.Log("No assets to update.");
+                Debug.Log("No assets to update at path : " + assetsPath);
 
                 // Returning from this function
                 return;

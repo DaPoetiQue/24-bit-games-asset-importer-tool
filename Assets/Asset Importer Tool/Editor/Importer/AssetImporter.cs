@@ -48,8 +48,11 @@ namespace AssetImporterToolkit
                     // Platform overides
                     var platformOverides = textureImporter.GetPlatformTextureSettings(runtimePlatformName);
 
-                    // Overiding setting for selected runtime platform
+                    // Checking if platform overide is enabled.
                     platformOverides.overridden = importConfiguration.m_TextureOveridePlatormOption != PlatformOption.None;
+
+                    // Overiding setting for selected runtime platform
+                    platformOverides.maxTextureSize = maximumTextureSize;
 
                     // Assigning settings
                     textureImporter.SetPlatformTextureSettings(platformOverides);
@@ -65,9 +68,6 @@ namespace AssetImporterToolkit
         // Preprocessing imported audio assets
         public void OnPreprocessAudio()
         {
-            // Log
-            Debug.Log("Imported Audio");
-
             // Getting import Configuration asset file for the imported audio asset.
             importConfiguration = Configurations.GetAssetImportConfiguration(assetPath);
 
@@ -110,28 +110,5 @@ namespace AssetImporterToolkit
                 Debug.Log("This folder is not affected by the asset importer tool. add the folder path to the included directories path list of a configuration asset file.");
             }
         }
-
-        // On pre process assets
-        public void OnPreprocessAsset()
-        {
-            // Checking if settings are missing
-            if(assetImporter.importSettingsMissing)
-                return;
-
-            // Getting asset type
-            Debug.Log("Imported asset of : " + assetImporter.name);
-
-            // Get Asset
-            // AudioImporter audioImporter = assetImporter as AudioImporter;
-
-        }
-
-        // --On post process all assets
-        public void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssets)
-        {
-            // Log
-            Debug.Log("Assets post processed");
-        }
-       
     }
 }
