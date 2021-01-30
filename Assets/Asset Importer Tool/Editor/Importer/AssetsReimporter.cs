@@ -13,23 +13,20 @@ namespace AssetImporterToolkit
         // Re import assets at path
         public static void OnReimportAssetsAtPath(string assetsPath)
         {
-            // Searching the assets directory for files with supported extension
-            var fileEntries = Directory.GetFiles(assetsPath).Where(file => AllowedFileExtension.FileExtensions.Any(file.ToLower().EndsWith));
-
-            // Converting file entries to assets path
-            string[] fileEntriesToPathArray = fileEntries.ToArray();
+            // Getting asset file entries from the asset import directory class
+            string[] assetFilesEntries = AssetImportDirectory.GetMultipleExtensionFileEntries(assetsPath);
 
             // Checking if there were file entries found in the directories
-            if(fileEntriesToPathArray.Length > 0)
+            if (assetFilesEntries.Length > 0)
             {
                 // Looping through found assets
-                for (int i = 0; i < fileEntriesToPathArray.Length; i++)
+                for (int i = 0; i < assetFilesEntries.Length; i++)
                 {
                     // Reimport asset
-                    AssetDatabase.ImportAsset(fileEntriesToPathArray[i]);
+                    AssetDatabase.ImportAsset(assetFilesEntries[i]);
 
                     // Log
-                    Debug.Log("Updating asset : " + fileEntriesToPathArray[i]);
+                    Debug.Log("Updated asset : " + assetFilesEntries[i]);
                 }
             }
             else

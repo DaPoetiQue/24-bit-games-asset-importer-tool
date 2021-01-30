@@ -12,5 +12,8 @@ namespace AssetImporterToolkit
 
         // All the allowed file extensions combined
         public static string[] FileExtensions = new string[] { ".aif", ".wav", ".mp3", ".ogg", ".psd", ".tiff", ".jpg", ".tga", "png", "gif", "bmp", "iff", ".pict" };
+
+        // A configuration asset allowed file extension
+        public static string ConfigurationAssetExtension = ".asset";
     }
 }   

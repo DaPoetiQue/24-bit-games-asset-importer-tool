@@ -7,6 +7,7 @@ using UnityEditor;
 namespace AssetImporterToolkit
 {
     // Asset imorter configuration scriptable object class.
+    [CreateAssetMenu(fileName = "Asset Import Configuration", menuName = "24 Bit Games/Create Configuration Asset")]
     public class AssetImporterConfiguration : ScriptableObject
     {
         // Texture settings region.

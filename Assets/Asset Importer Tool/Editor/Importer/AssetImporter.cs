@@ -1,5 +1,6 @@
 ﻿// Libraries.
 using System;
+using System.IO;
 using UnityEngine;
 using UnityEditor;
 
@@ -13,20 +14,21 @@ namespace AssetImporterToolkit
     public class AssetImporter : AssetPostprocessor
     {
         // Importer configuration asset file.
-        AssetImporterConfiguration importConfiguration = null;
+        private static AssetImporterConfiguration importConfiguration = null;
 
         // On pre process texture assets.
         public void OnPreprocessTexture()
         {
-            // Log
-            Debug.Log("Imported Texture");
+            // Getting asset path directry in lower case type
+            string assetDirectory = AssetImportDirectory.GetAssetDirectory(assetPath.ToLower());
 
             // Getting import configuration asset file for the imported texture asset.
-            importConfiguration = Configurations.GetAssetImportConfiguration(assetPath);
+            importConfiguration = Configurations.GetAssetImportConfiguration(assetDirectory);
 
             // --Checking if import configurations exist
             if(importConfiguration)
             {
+
                 // Trying to modify the texture importer with import configuration.
                 try
                 {
@@ -68,11 +70,14 @@ namespace AssetImporterToolkit
         // Preprocessing imported audio assets
         public void OnPreprocessAudio()
         {
-            // Getting import Configuration asset file for the imported audio asset.
-            importConfiguration = Configurations.GetAssetImportConfiguration(assetPath);
+            // Getting asset path directry in lower case type
+            string assetDirectory = AssetImportDirectory.GetAssetDirectory(assetPath.ToLower());
+
+            // Getting import configuration asset file for the imported texture asset.
+            importConfiguration = Configurations.GetAssetImportConfiguration(assetDirectory);
 
             // --Checking if import configurations exist
-            if(importConfiguration)
+            if (importConfiguration)
             {
                 // Trying to modify the audio importer settings.
                 try
@@ -110,5 +115,27 @@ namespace AssetImporterToolkit
                 Debug.Log("This folder is not affected by the asset importer tool. add the folder path to the included directories path list of a configuration asset file.");
             }
         }
+
+        // On post process all project assets
+        private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
+        {
+            // Looping through imported assets
+            foreach (string assetPath in importedAssets)
+            {
+                // --Check if asset type
+                if (assetPath.Contains(AllowedFileExtension.ConfigurationAssetExtension))
+                {
+                    // Getting import configuration asset file
+                    importConfiguration = Configurations.GetAssetImportConfiguration(assetPath);
+
+                    // Check if asset importer configuration file is loaded successfully
+                    if (importConfiguration)
+                    {
+                        // Initializing the newly created asset importer configuration fil
+                        Configurations.OnAssetImporterConfigurationAssetInitializer(importConfiguration, assetPath);
+                    }
+                }
+            }
+        }  
     }
 }

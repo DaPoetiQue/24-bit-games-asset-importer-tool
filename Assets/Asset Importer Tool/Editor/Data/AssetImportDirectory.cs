@@ -1,7 +1,6 @@
 ﻿// Libraries
 using System.IO;
-using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
 using UnityEditor;
 
 // Namespace
@@ -23,24 +22,62 @@ namespace AssetImporterToolkit
             return AssetDatabase.GUIDToAssetPath(assetGuid);
         }
 
-        // Find asset of type
-        public static List<T> FindAssetsByType <T>() where T : Object
+        // Getting File Entries
+        public static string[] GetMultipleExtensionFileEntries(string searchFolderPath)
         {
-            List<T> assets = new List<T>();
+            // Searching the assets directory for files with supported extension
+            var fileEntries = Directory.GetFiles(searchFolderPath).Where(file => AllowedFileExtension.FileExtensions.Any(file.ToLower().EndsWith));
 
-            string[] guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(T)));
-            for (int i = 0; i < guids.Length; i++)
+            // Converting file entries to assets path
+            string[] fileEntriesToPathArray = fileEntries.ToArray();
+
+            // Return all found files
+            return fileEntriesToPathArray;
+        }
+
+        // Getting the newly created configuration asset path
+        public static string GetNewCreatedConfigurationAssetPath(string assetDirectory)
+        {
+            // Getting files at the given asset directory
+            string[] configurationAssetEntries = Directory.GetFiles(assetDirectory, ConfigurationAssetSearchPattern(), SearchOption.AllDirectories);
+
+            // Checking is assets found
+            if(configurationAssetEntries.Length > 0)
             {
-                string assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
-                T asset = AssetDatabase.LoadAssetAtPath<T>(assetPath);
-                if (asset != null)
-                {
-                    assets.Add(asset);
-                }
+                // Returning the last array index value
+                return configurationAssetEntries[configurationAssetEntries.Length - 1];
             }
+            else
+            {
+                // Returning null
+                return null;
+            }
+        }
 
-            // Returning found assets
-            return assets;
+        // This method id for checking if a configuration asset exist inside a given directory. 
+        public static bool DirectoryContainsConfigurationAsset(string assetDirectory)
+        {
+            // Checking if tru
+            if (Configurations.GetAssetImportConfiguration(assetDirectory))
+            {
+                // Return true now that the asset exist
+                return true;
+            }
+            else
+            {
+                // Return false
+                return false;
+            }
+        }
+
+        // Configuration asset search pattern
+        public static string ConfigurationAssetSearchPattern()
+        {
+            // Create a new search pattern
+            string searchPattern = "*" + AllowedFileExtension.ConfigurationAssetExtension;
+
+            // Returning the new search pattern
+            return searchPattern;
         }
     }
 }
