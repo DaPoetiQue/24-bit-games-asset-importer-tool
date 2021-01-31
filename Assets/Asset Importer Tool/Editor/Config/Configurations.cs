@@ -9,6 +9,9 @@ namespace AssetImporterToolkit
     // Configurations
     public static class Configurations
     {
+        // Log name
+        private static string classLogName = "Configurations";
+
         // Creating a new
         public static ConfigurationAsset assetImporterConfiguration;
 
@@ -45,7 +48,7 @@ namespace AssetImporterToolkit
                 }
 
                 // Log successs
-                Debug.Log("A new import configuration asset file was successfully created at path : " + newConfigurationAssetDirectory);
+                Debugger.Log(className : classLogName, message : "A new import configuration asset file was successfully created at path : " + newConfigurationAssetDirectory);
             }
         }
 
@@ -90,8 +93,11 @@ namespace AssetImporterToolkit
                         // Checking if the asset importer configuration has debug enabled
                         if(assetImporterConfiguration.AllowDebug)
                         {
+                            // Log Message
+                            string logMessage = "Found : " + configurationAssetFileEntries.Length + " entries named : " + configurationAssetFileEntries[0] + " with : " + assetImporterConfiguration.GetIncludedAssetsDirectoryLibraryCount() + " included directories.";
+
                             // Logging a new message to the console. 
-                            Debug.Log("Found : " + configurationAssetFileEntries.Length + " entries named : " + configurationAssetFileEntries[0] + " with : " + assetImporterConfiguration.GetIncludedAssetsDirectoryLibraryCount() + " included directories.");
+                            Debugger.Log(className : classLogName, message : logMessage);
                         }
                     }
                 }
@@ -100,9 +106,11 @@ namespace AssetImporterToolkit
                     // Checking if the asset importer configuration has debug enabled
                     if (assetImporterConfiguration.AllowDebug)
                     {
+                        // Log message
+                        string logMessage = "This folder is not included for import configuration. create a new import configurtation asset file or add this directory to an existing configuration asset file.";
 
                         // Logging a new warning message
-                        Debug.LogWarning("This folder is not included for import configuration. create a new import configurtation asset file or add this directory to an existing configuration asset file.");
+                        Debugger.LogWarning(className : classLogName, message : logMessage);
                     }
                 }
             }
@@ -137,7 +145,7 @@ namespace AssetImporterToolkit
                     foreach (string directory in includedAssetDirectories.AssetDirectoryList)
                     {
                         // Reimport assets from the included directory
-                        AssetsReimporter.OnReimportAssetsAtPath(directory, configurationAsset);
+                        AssetsReimporter.ReimportAssetsAtPath(directory, configurationAsset);
                     }
 
                     // Refresh asset database
@@ -161,8 +169,11 @@ namespace AssetImporterToolkit
                 // Checking if the configuration asset allow debug is enabled
                 if (configurationAsset.AllowDebug)
                 {
+                    // Log Message
+                    string logMessage = "Configuration file missing.";
+
                     // Logging a new warning message to the console
-                    Debug.LogWarning("Configuration file missing.");
+                    Debugger.LogWarning(className : classLogName, message : logMessage);
                 }
 
                 // Returning from this function

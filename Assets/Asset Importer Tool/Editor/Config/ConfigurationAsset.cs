@@ -13,7 +13,8 @@ namespace AssetImporterToolkit
         #region Texture settings
 
         // This is the texture import configuration.
-        public TextureImportConfiguration TextureImportConfiguration = new TextureImportConfiguration() { MaximumTextureSize = TextureSizeOption._1024, AnisotropicFilteringLevel = 0, m_TextureOveridePlatormOption = PlatformOption.Android };
+        [Space(5)]
+        public TextureImporterConfiguration TextureImportConfiguration = new TextureImporterConfiguration() { MaximumTextureSize = TextureSizeOption._1024, AnisotropicFilteringLevel = 0, m_TextureOveridePlatormOption = PlatformOption.Android };
 
         #endregion // Ending texture settings region.
 
@@ -21,8 +22,8 @@ namespace AssetImporterToolkit
         #region Audio settings
 
         // this is for audio import configuration.
-        [Space(3)]
-        public AudioImportConfiguration AudioImportConfiguration = new AudioImportConfiguration() { AudioOveridePlatormOption = PlatformOption.Android };
+        [Space(5)]
+        public AudioImporterConfiguration AudioImportConfiguration = new AudioImporterConfiguration() { AudioOveridePlatormOption = PlatformOption.Android };
 
         #endregion // Ending audio settings region.
 
@@ -30,11 +31,11 @@ namespace AssetImporterToolkit
         #region Included asset directory library
 
         // This is a initialized list of included assets directory.
-        [Space(3)]
+        [Space(5)]
         public AssetLibrary IncludedAssetDirectoryLibrary = new AssetLibrary() { AssetDirectoryList = new List<string>() };
 
         // Allow Debug
-        [Space(3)]
+        [Space(5)]
         public bool AllowDebug;
 
         #endregion // Ending audio settings region.

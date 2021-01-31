@@ -1,7 +1,4 @@
 ﻿// Libraries
-using System.IO;
-using System.Linq;
-using UnityEngine;
 using UnityEditor;
 
 // Namespace
@@ -9,9 +6,12 @@ namespace AssetImporterToolkit
 {
     // Asset import preprocessor class
     public static class AssetsReimporter
-    { 
+    {
+        // Class log name
+        private static string classLogName = "Assets Reimporter";
+
         // Re import assets at path
-        public static void OnReimportAssetsAtPath(string assetsPath, ConfigurationAsset configurationAsset)
+        public static void ReimportAssetsAtPath(string assetsPath, ConfigurationAsset configurationAsset)
         {
             // Searching the asset folders to find importable assts that can be retroactively updated.
             string[] importableAssetFilesEntries = Utilities.GetMultipleExtensionFileEntries(assetsPath);
@@ -32,7 +32,7 @@ namespace AssetImporterToolkit
                     if (configurationAsset.AllowDebug)
                     {
                         // Log a new message to the console
-                        Debug.Log("Asset at path : " + importableAsset + " has been updated successfully.");
+                        Debugger.Log(className : classLogName, message : " Asset at path : " + importableAsset + " has been updated successfully.");
                     }
                 }
             }
@@ -42,7 +42,7 @@ namespace AssetImporterToolkit
                 if (configurationAsset.AllowDebug)
                 {
                     // Log
-                    Debug.Log("No assets to update at path : " + assetsPath);
+                    Debugger.Log(className: classLogName, message: " No assets to update at path : " + assetsPath);
                 }
 
                 // Returning from this function

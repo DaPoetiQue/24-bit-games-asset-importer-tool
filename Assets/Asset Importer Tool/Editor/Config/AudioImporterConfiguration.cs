@@ -8,7 +8,7 @@ namespace AssetImporterToolkit
 {
     // Audio configurations definition struct
     [Serializable]
-    public struct AudioImportConfiguration
+    public struct AudioImporterConfiguration
     {
         // Audio settings region.
         #region Audio settings

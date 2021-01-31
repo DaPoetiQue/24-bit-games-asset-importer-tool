@@ -7,7 +7,7 @@ namespace AssetImporterToolkit
 {
     // Texture configurations definition
     [Serializable]
-    public struct TextureImportConfiguration
+    public struct TextureImporterConfiguration
     {
         // Texture settings region.
         #region Texture settings
