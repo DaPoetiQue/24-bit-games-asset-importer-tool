@@ -1,6 +1,5 @@
 ﻿// Libraries.
 using System;
-using System.IO;
 using UnityEngine;
 using UnityEditor;
 
@@ -14,7 +13,7 @@ namespace AssetImporterToolkit
     public class AssetImporter : AssetPostprocessor
     {
         // Importer configuration asset file.
-        private static AssetImporterConfiguration importConfiguration = null;
+        public static ConfigurationAsset importConfiguration = null;
 
         // On pre process texture assets.
         public void OnPreprocessTexture()
@@ -28,30 +27,29 @@ namespace AssetImporterToolkit
             // --Checking if import configurations exist
             if(importConfiguration)
             {
-
                 // Trying to modify the texture importer with import configuration.
                 try
                 {
                     // Converting texture overide platorm options to a string.
-                    string runtimePlatformName = importConfiguration.m_TextureOveridePlatormOption.ToString();
+                    string runtimePlatformName = importConfiguration.TextureImportConfiguration.m_TextureOveridePlatormOption.ToString();
 
                     // Getting the texture impoprter settings from the imported asset.
                     var textureImporter = assetImporter as TextureImporter;
 
                     // Getting the max size enum and converting it to a int value
-                    int maximumTextureSize = (int)importConfiguration.MaximumTextureSize;
+                    int maximumTextureSize = (int)importConfiguration.TextureImportConfiguration.MaximumTextureSize;
 
                     // Assigning texture importer platform settings maximum texture size.
                     textureImporter.maxTextureSize = maximumTextureSize;
 
                     // Assigning new settings.
-                    textureImporter.anisoLevel = importConfiguration.AnisotropicFilteringLevel;
+                    textureImporter.anisoLevel = importConfiguration.TextureImportConfiguration.AnisotropicFilteringLevel;
 
                     // Platform overides
                     var platformOverides = textureImporter.GetPlatformTextureSettings(runtimePlatformName);
 
                     // Checking if platform overide is enabled.
-                    platformOverides.overridden = importConfiguration.m_TextureOveridePlatormOption != PlatformOption.None;
+                    platformOverides.overridden = importConfiguration.TextureImportConfiguration.m_TextureOveridePlatormOption != PlatformOption.None;
 
                     // Overiding setting for selected runtime platform
                     platformOverides.maxTextureSize = maximumTextureSize;
@@ -89,18 +87,21 @@ namespace AssetImporterToolkit
                     AudioImporterSampleSettings audioConfiguration = audioImporter.defaultSampleSettings;
 
                     // Applying the configured audio settings data to the imported audio asset.
-                    audioConfiguration.loadType = importConfiguration.LoadType;
-                    audioConfiguration.sampleRateSetting = importConfiguration.SampleRate;
-                    audioConfiguration.compressionFormat = importConfiguration.CompressionFormat;
+                    audioConfiguration.loadType = importConfiguration.AudioImportConfiguration.LoadType;
+                    audioConfiguration.sampleRateSetting = importConfiguration.AudioImportConfiguration.SampleRate;
+                    audioConfiguration.compressionFormat = importConfiguration.AudioImportConfiguration.CompressionFormat;
 
                     // Assigning configured audio importer configurations
                     audioImporter.defaultSampleSettings = audioConfiguration;
 
+                    // Checking for active audio overide platorm option.
+                    bool platformOverideEnabled = importConfiguration.AudioImportConfiguration.AudioOveridePlatormOption != PlatformOption.None;
+
                     // Checking if platform settings overide is enabled
-                    if (importConfiguration.AudioOveridePlatormOption != PlatformOption.None)
+                    if (platformOverideEnabled)
                     {
                         // Overiding platform settings for selected runtime platform
-                        audioImporter.SetOverrideSampleSettings(importConfiguration.AudioOveridePlatormOption.ToString(), audioConfiguration);
+                        audioImporter.SetOverrideSampleSettings(importConfiguration.AudioImportConfiguration.AudioOveridePlatormOption.ToString(), audioConfiguration);
                     }
                 }
                 catch (Exception e)
@@ -132,7 +133,7 @@ namespace AssetImporterToolkit
                     if (importConfiguration)
                     {
                         // Initializing the newly created asset importer configuration fil
-                        Configurations.OnAssetImporterConfigurationAssetInitializer(importConfiguration, assetPath);
+                        Configurations.AddConfigurationIncludedAssetDirectory(importConfiguration, assetPath);
                     }
                 }
             }

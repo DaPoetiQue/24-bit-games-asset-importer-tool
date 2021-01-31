@@ -1,14 +1,40 @@
 ﻿// Libraries
+using System;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 // Namespace
 namespace AssetImporterToolkit
 {
-    // Asset imorter configuration scriptable object class.
-    [CreateAssetMenu(fileName = "Asset Import Configuration", menuName = "24 Bit Games/Create Configuration Asset")]
-    public class AssetImporterConfiguration : ScriptableObject
+    // Platform name options
+    public enum PlatformOption
+    {
+        // A list of platform names
+        None, Android, iOS, NintendoSwitch,
+        PS4, PS5, Standalone, tvOS, WindowsStoreApps,
+        WebGL, XBoxOne
+    }
+
+    // Texture Size Option
+    public enum TextureSizeOption
+    {
+        // A list of texture sizes
+        _32 = 32, _64 = 64, _128 = 128, _256 = 256,
+        _512 = 512, _1024 = 1024, _2048 = 2048,
+        _4096 = 4096, _8192 = 8192
+    }
+
+    // Directory library class
+    public struct AssetData<T>
+    {
+        // A list of folder direcories that are included for pre processing.
+        public List<T> data;
+    }
+
+    // Texture configurations definition
+    [Serializable]
+    public struct TextureImportConfigurations
     {
         // Texture settings region.
         #region Texture settings
@@ -19,7 +45,7 @@ namespace AssetImporterToolkit
 
         // Maximum texture size option.
         [Space(3)]
-        public TextureSizeOption MaximumTextureSize = TextureSizeOption._1024;
+        public TextureSizeOption MaximumTextureSize;
 
         // Anisotropic filtering level value.
         [Space(3)]
@@ -31,7 +57,12 @@ namespace AssetImporterToolkit
         public PlatformOption m_TextureOveridePlatormOption;
 
         #endregion // Ending texture settings region.
+    }
 
+    // Audio configurations definition struct
+    [Serializable]
+    public struct AudioImportConfigurations
+    {
         // Audio settings region.
         #region Audio settings
 
@@ -56,29 +87,9 @@ namespace AssetImporterToolkit
         public PlatformOption AudioOveridePlatormOption;
 
         #endregion // Ended Audio settings region
-
-        // Asset directories function region.
-        #region Asset directories
-
-        // Directories importer settings header.
-        [Space(3)]
-        [Header("Importer Configuration Directories")]
-
-        // A list of folder direcories that are included for pre processing.
-        [Space(3)]
-        public List<string> IncludedAssetDirectory = new List<string>();
-
-        // Setting default asset importer configuration directory.
-        public void AssetImporterConfigurationDirectory(string path)
-        {
-            // Check if path doesn't exist
-            if(!IncludedAssetDirectory.Contains(path))
-            {
-                // Assigning the default path to the asset importer.
-                IncludedAssetDirectory.Add(path);
-            }
-        }
-
-        #endregion // Ended asset directories function region.
     }
+
+  
+
+
 }

@@ -1,6 +1,5 @@
 ﻿// Libraries
 using System.IO;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
@@ -10,78 +9,101 @@ namespace AssetImporterToolkit
     // Configurations
     public static class Configurations
     {
-        // A list of filter names for getting asset configuation files in the project.
-        public static string m_ImportConfigAssetFindFilter = "asset, config, configuration, import";
-
-        // --Asset Paths
-        public static List<string> ImportConfigurationPathList = new List<string>();
-
         // Creating a new
-        public static AssetImporterConfiguration assetImporterConfiguration;
+        public static ConfigurationAsset assetImporterConfiguration;
 
-        // On asset importer configuration asset initializer
-        public static void OnAssetImporterConfigurationAssetInitializer(AssetImporterConfiguration configurationAsset, string assetPath)
+        // This function assigns asset directories to newly created configuration asset files.
+        public static void AddConfigurationIncludedAssetDirectory(ConfigurationAsset configurationAsset, string assetDirectory)
         {
-            // Checking if asset importer configuration loaded successfully and that it doesn't include any directories.
-            if (configurationAsset && configurationAsset.IncludedAssetDirectory.Count <= 0)
+            // Checking if asset importer configuration doesn't include any directories.
+            bool configurationHasNoIncludedAssetDirectories = configurationAsset.GetIncludedAssetsDirectoryLibraryCount() <= 0;
+
+            // Checking if asset importer configuration loaded successfully and that it doesn't include directories.
+            if (AssetImportDirectory.IsValidConfigurationAsset(configurationAsset) && configurationHasNoIncludedAssetDirectories)
             {
                 // Getting the directory of the newly created configuration asset
-                string assetDirectory = AssetImportDirectory.GetAssetDirectory(assetPath);
+                string newConfigurationAssetDirectory = AssetImportDirectory.GetAssetDirectory(assetDirectory);
 
                 // Assigning the directory reference to the asset importer.
-                configurationAsset.AssetImporterConfigurationDirectory(assetDirectory);
+                configurationAsset.AddConfigurationAssetIncludedDirectoryToLibrary(newConfigurationAssetDirectory);
 
                 // Checking for sub directories to include in the asset importer configuration directory.
-                string[] subDirectories = AssetDatabase.GetSubFolders(assetDirectory);
+                string[] subDirectoriesToInclude = AssetDatabase.GetSubFolders(newConfigurationAssetDirectory);
+
+                // Checking if sun directories are found/initialized.
+                bool subDirectoriesFound = subDirectoriesToInclude.Length > 0;
 
                 // --Checking if sub directories were found.
-                if (subDirectories.Length > 0)
+                if (subDirectoriesFound)
                 {
-                    // Looping through found sub directories to add to the asset importer configuration asset file.
-                    foreach (string directory in subDirectories)
+                    // Looping through found included sub directories to add to the asset importer configuration asset file.
+                    foreach (string directory in subDirectoriesToInclude)
                     {
                         // Adding the scriptable object import configuration asset path to the newely created configuration asset file.
-                        configurationAsset.AssetImporterConfigurationDirectory(directory);
+                        configurationAsset.AddConfigurationAssetIncludedDirectoryToLibrary(directory);
                     }
                 }
 
                 // Log successs
-                Debug.Log("A new import configuration asset file was successfully created at path : " + assetDirectory);
+                Debug.Log("A new import configuration asset file was successfully created at path : " + newConfigurationAssetDirectory);
             }
         }
 
-        // Getting configuration file
-        public static AssetImporterConfiguration GetAssetImportConfiguration(string assetPath)
+        // This functions is used to get and loaded asset configuration
+        public static ConfigurationAsset GetAssetImportConfiguration(string assetPath)
         {
-            // Checking
-            string[] entry = Directory.GetFiles(assetPath, AssetImportDirectory.ConfigurationAssetSearchPattern(), SearchOption.TopDirectoryOnly);
+            // Searching through the given asset path directory to find configuration asset file entries.
+            string[] assetImportConfigurationEntries = Directory.GetFiles(assetPath, Utilities.ConfigurationAssetSearchPattern(), SearchOption.TopDirectoryOnly);
 
-            // Checking
-            if(entry.Length > 0)
+            // Checking if the configuration entries were found
+            bool configurationAssetFilesFound = assetImportConfigurationEntries.Length > 0;
+
+            // Checking if configuration asset file exist
+            if (configurationAssetFilesFound)
             {
-                // Getting first entry
-                assetImporterConfiguration = AssetDatabase.LoadAssetAtPath<AssetImporterConfiguration>(entry[0]);
+                // Getting first asset found and aggigning it as a asset importer configuration asset.
+                assetImporterConfiguration = AssetDatabase.LoadAssetAtPath<ConfigurationAsset>(assetImportConfigurationEntries[0]);
             }
             else
             {
-                // Getting the parent folder
-                string parentFolderPath = Directory.GetParent(assetPath).ToString();
+                // Finding the root directory of the current file path and converting it to a lower cased string.
+                string rootDirectory = Directory.GetParent(assetPath).ToString().ToLower();
 
-                // Getting asset files
-                string[] assetFileEntries = Directory.GetFiles(parentFolderPath, AssetImportDirectory.ConfigurationAssetSearchPattern(), SearchOption.TopDirectoryOnly);
+                // Checking if the root directory was found
+                bool rootDirectoryExist = !string.IsNullOrEmpty(rootDirectory);
 
-                //
-                if(assetFileEntries.Length > 0)
+                // Checking if the root directory exist and search for configuration asset files
+                if(rootDirectoryExist)
                 {
-                    // Getting first entry
-                    assetImporterConfiguration = AssetDatabase.LoadAssetAtPath<AssetImporterConfiguration>(assetFileEntries[0]);
+                    // Searching for configuration asset types in the root directory
+                    string[] configurationAssetFileEntries = Directory.GetFiles(rootDirectory, Utilities.ConfigurationAssetSearchPattern(), SearchOption.TopDirectoryOnly);
 
-                    // Log
-                    Debug.Log("Found : " + assetFileEntries.Length + " entries named : " + assetFileEntries[0] + " with : " + assetImporterConfiguration.IncludedAssetDirectory.Count + " included directories.");
+                    // Checking if configuration the asset file entries were found in the root directory
+                    bool configurationAssetFileEntriesFound = configurationAssetFileEntries.Length > 0;
+
+                    // Checking if configuration assets exist
+                    if (configurationAssetFileEntriesFound)
+                    {
+                        // Getting the first configuration asset file in the entries and assign it as the asset importer configuration asset file.
+                        assetImporterConfiguration = AssetDatabase.LoadAssetAtPath<ConfigurationAsset>(configurationAssetFileEntries[0]);
+
+                        // Checking if the asset importer configuration has debug enabled
+                        if(assetImporterConfiguration.AllowDebug)
+                        {
+                            // Logging a new message to the console. 
+                            Debug.Log("Found : " + configurationAssetFileEntries.Length + " entries named : " + configurationAssetFileEntries[0] + " with : " + assetImporterConfiguration.GetIncludedAssetsDirectoryLibraryCount() + " included directories.");
+                        }
+                    }
                 }
                 else
                 {
-                    Debug.Log("Parent not found. :(");
+                    // Checking if the asset importer configuration has debug enabled
+                    if (assetImporterConfiguration.AllowDebug)
+                    {
+
+                        // Logging a new warning message
+                        Debug.LogWarning("This folder is not included for import configuration. create a new import configurtation asset file or add this directory to an existing configuration asset file.");
+                    }
                 }
             }
 
@@ -89,149 +111,64 @@ namespace AssetImporterToolkit
             return assetImporterConfiguration;
         }
 
-        // Getting configuration asset from a given directory
-        public static AssetImporterConfiguration GetConfigurationAssetFromDirectory(string assetDirectory)
+        // This function find and load a configuration asset
+        public static ConfigurationAsset GetConfigurationAssetFromDirectory(string assetDirectory)
         {
             // Returning loaded configuration asset
-            return AssetDatabase.LoadAssetAtPath<AssetImporterConfiguration>(assetDirectory);
+            return AssetDatabase.LoadAssetAtPath<ConfigurationAsset>(assetDirectory);
         }
 
-        // Used to update assets retroactively
-        public static void OnImportedAssetsConfigurationUpdate(AssetImporterConfiguration configurationAsset)
+        // This function updates all assets from the configuration asset's included diretories.
+        public static void OnUpdateIncludedAssetsUsingConfiguration(ConfigurationAsset configurationAsset)
         {
-            // Checking if a configuration asset exist
-            if (configurationAsset)
+            // Checking if a configuration asset is not null
+            if (AssetImportDirectory.IsValidConfigurationAsset(configurationAsset))
             {
-                // Checking if there are included asset directories for the current selected configuration asset
-                if (configurationAsset.IncludedAssetDirectory.Count > 0)
-                {
-                    // Refresh asset database
-                    AssetDatabase.Refresh(ImportAssetOptions.Default);
+                // Checking if the configuration asset's importer assets library has included directories assigned
+                bool configurationIncludesDirectories = configurationAsset.GetIncludedAssetsDirectoryLibraryCount() > 0;
 
-                    // Looping through included directories
-                    for (int i = 0; i < configurationAsset.IncludedAssetDirectory.Count; i++)
+                // Checking if directories included
+                if (configurationIncludesDirectories)
+                {
+                    // Getting all included asset directories
+                    AssetLibrary includedAssetDirectories = configurationAsset.GetIncludedAssetsDirectoryLibrary();
+
+                    // Loop through found inc
+                    foreach (string directory in includedAssetDirectories.AssetDirectoryList)
                     {
-                        // Reimport assets from the included folders
-                        AssetsReimporter.OnReimportAssetsAtPath(configurationAsset.IncludedAssetDirectory[i]);
+                        // Reimport assets from the included directory
+                        AssetsReimporter.OnReimportAssetsAtPath(directory, configurationAsset);
                     }
 
                     // Refresh asset database
-                    AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+                    AssetDatabase.Refresh(ImportAssetOptions.Default);
                 }
                 else
                 {
-                    // Logging a new warning message
-                    Debug.LogWarning("There are currently no included asset directories to update.");
+                    // Checking if the configuration asset allow debug is enabled
+                    if(configurationAsset.AllowDebug)
+                    {
+                        // Logging a new warning message
+                        Debug.LogWarning("There are currently no included asset directories to update.");
+                    }
 
                     // Returning from this function
                     return;
                 }
             }
+            else
+            {
+                // Checking if the configuration asset allow debug is enabled
+                if (configurationAsset.AllowDebug)
+                {
+                    // Logging a new warning message to the console
+                    Debug.LogWarning("Configuration file missing.");
+                }
+
+                // Returning from this function
+                return;
+            }
         }
-
-        //// Configuration asset search pattern
-        //public static string ConfigurationAssetSearchPattern()
-        //{
-        //    // Create a new search pattern
-        //    string searchPattern = "*" + AllowedFileExtension.ConfigurationAssetExtension;
-
-        //    // Returning the new search pattern
-        //    return searchPattern;
-        //}
-
-        // This function returns a asset importer configuration file from a given path.
-        //public static AssetImporterConfiguration GetAssetImportConfiguration(string path)
-        //{
-        //    // Checking if a configurable path exist.
-        //    if (path.StartsWith("Assets/") && !path.EndsWith(".asset"))
-        //    {
-        //        // Find guids fom import asset import directories using the import configuration asset find filter list.
-        //        string[] guids = AssetImportDirectory.FindImportConfigurations(m_ImportConfigAssetFindFilter);
-
-        //        // Checking if guids exist.
-        //        if (guids.Length > 0)
-        //        {
-        //            //Loop through loaded guids
-        //            foreach (string guid in guids)
-        //            {
-        //                // --Check If is asset file
-        //                if (AssetDatabase.GUIDToAssetPath(guid).Contains(".asset"))
-        //                {
-        //                    // Add path to list
-        //                    ImportConfigurationPathList.Add(AssetDatabase.GUIDToAssetPath(guid));
-        //                }
-        //            }
-
-        //            // --Check if import configuration path list is populated
-        //            if (ImportConfigurationPathList.Count > 0)
-        //            {
-        //                foreach (var item in ImportConfigurationPathList)
-        //                {
-        //                    // Log
-        //                    Debug.Log("Configuration path found : " + item);
-        //                }
-
-
-        //                // Getting current import configuration file path
-        //                string importConfigurationFilePath = ImportConfigurationPathList[ImportConfigurationPathList.Count - 1];
-
-        //                // Loading a configuration settings asset file from the  import configuration file path.
-        //                AssetImporterConfiguration importConfiguration = AssetDatabase.LoadAssetAtPath<AssetImporterConfiguration>(importConfigurationFilePath);
-
-        //                // Checking if configuration file loaded successfully.
-        //                if (importConfiguration && importConfiguration.IncludedAssetDirectory.Count > 0)
-        //                {
-        //                    // Getting a asset directory from a path.
-        //                    string assetDirectory = AssetImportDirectory.GetAssetDirectory(path);
-
-        //                    // Checking if the asset directory is contained in the included asset directory.
-        //                    if (importConfiguration.IncludedAssetDirectory.Contains(assetDirectory))
-        //                    {
-        //                        // --Return a configuration.
-        //                        return importConfiguration;
-        //                    }
-        //                    else
-        //                    {
-        //                        // Loggina a new warning.
-        //                        Debug.LogWarning("Folder at path : " + assetDirectory + " is not included.");
-
-        //                        // Returning null results.
-        //                        return null;
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    // Returning null results.
-        //                    return null;
-        //                }
-        //            }
-        //            else
-        //            {
-        //                // Log
-
-        //                Debug.LogWarning("Asset importer configuration not found/created : This folder is not included in the importer configuration asset file. The imported asset will not be affected by any configuration.");
-        //                // Debug.LogWarning("A configuration asset is not found.");
-        //                // Returning null results.
-        //                return null;
-        //            }
-        //        }
-        //        else
-        //        {
-        //            // Logging a new warning
-        //            Debug.LogWarning("A configuration asset is not found.");
-
-        //            // Returning null results.
-        //            return null;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        // Logging a new warning.
-        //        Debug.LogWarning("Not a configuration file.");
-
-        //        // Returning null results.
-        //        return null;
-        //    }
-        //}
+      
     }
 }

@@ -11,28 +11,39 @@ namespace AssetImporterToolkit
     public static class AssetsReimporter
     { 
         // Re import assets at path
-        public static void OnReimportAssetsAtPath(string assetsPath)
+        public static void OnReimportAssetsAtPath(string assetsPath, ConfigurationAsset configurationAsset)
         {
-            // Getting asset file entries from the asset import directory class
-            string[] assetFilesEntries = AssetImportDirectory.GetMultipleExtensionFileEntries(assetsPath);
+            // Searching the asset folders to find importable assts that can be retroactively updated.
+            string[] importableAssetFilesEntries = Utilities.GetMultipleExtensionFileEntries(assetsPath);
 
             // Checking if there were file entries found in the directories
-            if (assetFilesEntries.Length > 0)
+            bool importableAssetsFound = importableAssetFilesEntries.Length > 0;
+
+            // Checking if assets were found
+            if (importableAssetsFound)
             {
-                // Looping through found assets
-                for (int i = 0; i < assetFilesEntries.Length; i++)
+                // Going through found assets in the directory
+                foreach (string importableAsset in importableAssetFilesEntries)
                 {
                     // Reimport asset
-                    AssetDatabase.ImportAsset(assetFilesEntries[i]);
+                    AssetDatabase.ImportAsset(importableAsset);
 
-                    // Log
-                    Debug.Log("Updated asset : " + assetFilesEntries[i]);
+                    // Checking if debug is enabled
+                    if (configurationAsset.AllowDebug)
+                    {
+                        // Log a new message to the console
+                        Debug.Log("Asset at path : " + importableAsset + " has been updated successfully.");
+                    }
                 }
             }
             else
             {
-                // Log
-                Debug.Log("No assets to update at path : " + assetsPath);
+                // Checking if debug is enabled
+                if (configurationAsset.AllowDebug)
+                {
+                    // Log
+                    Debug.Log("No assets to update at path : " + assetsPath);
+                }
 
                 // Returning from this function
                 return;
