@@ -1,76 +1,89 @@
-﻿// Libraries
+﻿// Used libraries.
 using System.Collections.Generic;
 using UnityEngine;
 
-// Namespace
+// Namespace.
 namespace AssetImporterToolkit
 {
-    // Asset imorter configuration scriptable object class.
+    // This function creates a new scriptable object asset that contains platform import settings.
     [CreateAssetMenu(fileName = "Asset Import Configuration", menuName = "24 Bit Games/Create Configuration Asset")]
     public class ConfigurationAsset : ScriptableObject
     {
-        // Texture settings region.
-        #region Texture settings
+        #region Texture settings section
 
-        // This is the texture import configuration.
+        /// <summary>
+        /// This are the settings for the texture import configuration.
+        /// </summary>
         [Space(5)]
         public TextureImporterConfiguration TextureImportConfiguration = new TextureImporterConfiguration() { MaximumTextureSize = TextureSizeOption._1024, AnisotropicFilteringLevel = 0, m_TextureOveridePlatormOption = PlatformOption.Android };
 
-        #endregion // Ending texture settings region.
+        #endregion
 
-        // Audio settings region.
-        #region Audio settings
+        #region Audio settings section
 
-        // this is for audio import configuration.
+        /// <summary>
+        /// This are the settings for audio import configuration.
+        /// </summary>
         [Space(5)]
         public AudioImporterConfiguration AudioImportConfiguration = new AudioImporterConfiguration() { AudioOveridePlatormOption = PlatformOption.Android };
 
-        #endregion // Ending audio settings region.
+        #endregion
 
-        // Included asset directory library variables
-        #region Included asset directory library
+        #region Asset path directory library section
 
-        // This is a initialized list of included assets directory.
+        /// <summary>
+        /// This is the initialized strings array list of included assets directory path that the configuration file will affect.
+        /// </summary>
         [Space(5)]
-        public AssetLibrary IncludedAssetDirectoryLibrary = new AssetLibrary() { AssetDirectoryList = new List<string>() };
+        public AssetLibrary<string> IncludedAssetDirectoryLibrary = new AssetLibrary<string>() { AssetDirectoryList = new List<string>() };
 
-        // Allow Debug
+        /// <summary>
+        /// When enabled, the configuration asset file will log messages to the console.
+        /// </summary>
         [Space(5)]
         public bool AllowDebug;
 
-        #endregion // Ending audio settings region.
+        #endregion
 
-        // Asset directories function region.
-        #region Asset directories
+        #region Asset directories section
 
-        // This function adds configuration directory path to the library of included or affected directories.
-        public void AddConfigurationAssetIncludedDirectoryToLibrary(string path)
+        /// <summary>
+        /// Adds configuration directory path to the library of included or affected directories.
+        /// </summary>
+        /// <param name="assetDirectory">This function takes in a string parameter as a asset diretory that will be added tho the configuration asset file.</param>
+        public void AddConfigurationAssetIncludedDirectoryToLibrary(string assetDirectory)
         {
-            // Checking if path is already included
-            bool pathNotPreviouslyInclueded = !IncludedAssetDirectoryLibrary.AssetDirectoryList.Contains(path);
+            // This line checks if the asset path is already included with the configuration asset file.
+            bool pathNotPreviouslyInclueded = !IncludedAssetDirectoryLibrary.AssetDirectoryList.Contains(assetDirectory);
 
-            // Check if path doesn't exist
+            // Checking if path has not been included then add the path to the includede asset directory library list.
             if (pathNotPreviouslyInclueded)
             {
-                // Assigning the default path to the asset importer.
-                IncludedAssetDirectoryLibrary.AssetDirectoryList.Add(path);
+                // Adding the directory to the asset importer configuration asset file.
+                IncludedAssetDirectoryLibrary.AssetDirectoryList.Add(assetDirectory);
             }
         }
 
-        // This function returns all the included assets directories.
-        public AssetLibrary GetIncludedAssetsDirectoryLibrary()
+        /// <summary>
+        /// This function returns all the included assets directories that are currenlty added to the configuration asset file.
+        /// </summary>
+        /// <returns>Returns a string list of all the included assets directories.</returns>
+        public AssetLibrary<string> GetIncludedAssetsDirectoryLibrary()
         {
-            // Returning AssetLibrary
+            // Returning the asset library.
             return IncludedAssetDirectoryLibrary;
         }
 
-        // This function returns the amount of directories included to be affected by the configuration file.
+        /// <summary>
+        /// This function returns the amount of directories included to be affected by the configuration file.
+        /// </summary>
+        /// <returns>Returns the amount of directories.</returns>
         public int GetIncludedAssetsDirectoryLibraryCount()
         {
-            // Returning the amount of included asset directories
+            // Returning the amount of included asset directories.
             return IncludedAssetDirectoryLibrary.AssetDirectoryList.Count;
         }
 
-        #endregion // Ended asset directories function region.
+        #endregion
     }
 }

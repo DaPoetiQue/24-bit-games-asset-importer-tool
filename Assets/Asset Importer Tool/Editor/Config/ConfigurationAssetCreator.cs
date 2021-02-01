@@ -1,18 +1,19 @@
-﻿// Libraries
-using UnityEngine;
+﻿// Used libraries.
 using UnityEditor;
 
-// Namespace
+// Namespace.
 namespace AssetImporterToolkit
 {
-    // Configuration asset creator
     public class ConfigurationAssetCreator : Editor
     {
-        // Create a new scriptable object import configuration file.
+        // This log name is used when logging messages to the debbuger.
+        private static string classLogName = "Configuration Asset Creator";
+
+        // This function creates a new scriptable object import configuration asset file inside the project directory.
         [MenuItem("24 Bit Games/Asset Importer/Create Configuration Asset")]
         private static void CreateImportConfiguration()
         {
-            // Creating a new importer configuration instance.
+            // Creating a new importer configuration asset file instance.
             ConfigurationAsset assetImportConfigurationAsset = CreateInstance<ConfigurationAsset>();
 
             // Getting the path to save newely created scriptable object import configuration asset.
@@ -21,7 +22,7 @@ namespace AssetImporterToolkit
             // Checking if the configuration asset save path exist.
             bool configurationAssetSavePathExist = !string.IsNullOrEmpty(importConfigurationAssetSavePath);
 
-            // Checking if the importer configuration asset's instance was created
+            // Checking if the importer configuration asset's instance was created.
             bool isConfigurationAssetCreated = assetImportConfigurationAsset != null;
 
             // Check if the importer configuration instance and the asset save path exist.
@@ -38,10 +39,12 @@ namespace AssetImporterToolkit
             }
             else
             {
-                // Logging a new waning message to the console when this function is cancled by the user.
-                Debug.LogWarning("Asset importer toolkit : Configuration file creation operation canceled/failed: Import configuration asset file not created");
+                // Warning message to log in the unity debug console window.
+                string warningLogMessage = "Asset importer toolkit : Configuration file creation operation cancelled/failed: Import configuration asset file not created.";
 
-                // Return from function
+                // Logging a new warning message to the console when the configuration asset file creation is cancelled by the user.
+                Debugger.LogWarning(className : classLogName, message : warningLogMessage);
+
                 return;
             }
         }

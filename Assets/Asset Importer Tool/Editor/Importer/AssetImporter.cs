@@ -1,60 +1,63 @@
-﻿// Libraries.
+﻿// Used libraries.
 using UnityEditor;
 
 // Namespace.
 namespace AssetImporterToolkit
 {
-    // Allows multiple objects to be edited.
+    // Allowing multiple objects to be edited.
     [CanEditMultipleObjects]
 
-    // Asset importer class for asset post proccessing.
+     // This function is used to add configuration settings to imported audio assets.
     public class AssetImporter : AssetPostprocessor
     {
         // Importer configuration asset file.
-        public static ConfigurationAsset importConfiguration = null;
+        private static ConfigurationAsset importConfiguration = null;
 
-        // On pre process texture assets.
-        public void OnPreprocessTexture()
+        // This function is used to add configuration settings to imported texture assets.
+        private void OnPreprocessTexture()
         {
-            // Getting asset path directry in lower case type
+            // Getting asset path directry in lower case type.
             string assetDirectory = AssetImportDirectory.GetAssetDirectory(assetPath.ToLower());
 
             // Getting import configuration asset file for the imported texture asset.
             importConfiguration = Configurations.GetAssetImportConfiguration(assetDirectory);
 
-            // Post processing asset file using import settings
+            // Post processing asset file using import settings.
             AssetImporterPostProcessor.ProcessTextureAsset(importConfiguration, this);
         }
 
-        // Preprocessing imported audio assets
-        public void OnPreprocessAudio()
+        // This function is used to add configuration settings to imported audio assets.
+        private void OnPreprocessAudio()
         {
-            // Getting asset path directry in lower case type
+            // Getting asset path directry in lower case type.
             string assetDirectory = AssetImportDirectory.GetAssetDirectory(assetPath.ToLower());
 
             // Getting import configuration asset file for the imported texture asset.
             importConfiguration = Configurations.GetAssetImportConfiguration(assetDirectory);
 
-            // Post processing asset file using import settings
+            // Post processing asset file using import settings.
             AssetImporterPostProcessor.ProcessAudioAsset(importConfiguration, this);
         }
 
-        // On post process all project assets
+        // This function is used to add configuration asset file's included or affected asset directories.
         private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
         {
-            // Looping through imported assets
+            // Checking through the imported project assets. 
             foreach (string assetPath in importedAssets)
             {
-                // --Check if asset type
-                if (assetPath.Contains(AllowedFileExtension.ConfigurationAssetExtension))
+                // Checcking if the current asset path contains the file with the given extension.
+                bool assetHasRequiredExtension = assetPath.Contains(AllowedFileExtension.ConfigurationAssetExtension);
+
+                // --Checking if the asset has the extension of the type given.
+                if (assetHasRequiredExtension)
                 {
-                    // Getting import configuration asset file
+                    // Getting import configuration asset file.
                     importConfiguration = Configurations.GetAssetImportConfiguration(assetPath);
 
-                    // Check if asset importer configuration file is loaded successfully
+                    // Checkig if asset importer configuration file has been loaded successfully.
                     if (importConfiguration)
                     {
-                        // Initializing the newly created asset importer configuration fil
+                        // Initializing the newly created asset importer configuration file.
                         Configurations.AddConfigurationIncludedAssetDirectory(importConfiguration, assetPath);
                     }
                 }

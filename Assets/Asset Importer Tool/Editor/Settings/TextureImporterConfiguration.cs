@@ -1,11 +1,13 @@
-﻿// Libraries
+﻿// Used libraries.
 using System;
 using UnityEngine;
 
-// Namespace
+// Namespace.
 namespace AssetImporterToolkit
 {
-    // Texture configurations definition
+    /// <summary>
+    /// This struct contains the platform texture importer configurations.
+    /// </summary>
     [Serializable]
     public struct TextureImporterConfiguration
     {
@@ -13,20 +15,20 @@ namespace AssetImporterToolkit
         #region Texture settings
 
         // Texture importer settings inspector header.
-        [Space(3)]
+        [Space(5)]
         [Header("Texture Importer Settings")]
 
         // Maximum texture size option.
-        [Space(3)]
+        [Space(5)]
         public TextureSizeOption MaximumTextureSize;
 
         // Anisotropic filtering level value.
-        [Space(3)]
+        [Space(5)]
         [Range(0, 16)]
         public int AnisotropicFilteringLevel;
 
         // Overide texture settings for selected a runtime platform.
-        [Space(3)]
+        [Space(5)]
         public PlatformOption m_TextureOveridePlatormOption;
 
         #endregion // Ending texture settings region.

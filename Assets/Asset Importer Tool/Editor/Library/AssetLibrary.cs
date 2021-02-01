@@ -1,20 +1,23 @@
-﻿// Libraries
+﻿// Used libraries.
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-// Namespace
+// Namespace.
 namespace AssetImporterToolkit
 {
-    // This is the asset library for storing asset data
+    /// <summary>
+    /// This is the asset library for storing asset related data.
+    /// </summary>
+    /// <typeparam name="T">Takes in a object type, i.e. string</typeparam>
     [Serializable]
-    public struct AssetLibrary
+    public struct AssetLibrary<T>
     {
-        // Header
+        /// <summary>
+        /// This is a list for storing asset directory.
+        /// </summary>
         [Header("Asset Library")]
-
-        // This is a list for storing asset directory
-        [Space(3)]
-        public List<string> AssetDirectoryList;
+        [Space(10)]
+        public List<T> AssetDirectoryList;
     }
 }
