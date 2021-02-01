@@ -15,9 +15,6 @@ namespace AssetImporterToolkit
         // This log name is used when logging messages to the debbuger.
         private static string classLogName = "Configurations";
 
-        // Declaring a new static asset importer configuration instance.
-        private static ConfigurationAsset assetImporterConfiguration;
-
         #endregion
 
         #region functions
@@ -59,6 +56,12 @@ namespace AssetImporterToolkit
                     }
                 }
 
+                // Save asset data base.
+                AssetDatabase.SaveAssets();
+
+                // Refreshing the assets data base.
+                AssetDatabase.Refresh();
+
                 // Message to log in the unity debug console window.
                 string logMessage = "A new import configuration asset file was successfully created at path : " + newConfigurationAssetDirectory;
 
@@ -74,6 +77,9 @@ namespace AssetImporterToolkit
         /// <returns>Returns a configuration asset file from the given asset directory.</returns>
         public static ConfigurationAsset GetAssetImportConfiguration(string assetDirectory)
         {
+            // Defining an assigned importer configuration asset.
+            ConfigurationAsset importerConfigurationAsset;
+
             // Searching through the given asset directory to find configuration asset file entries.
             string[] assetImportConfigurationEntries = Directory.GetFiles(assetDirectory, Utilities.GetAssetExtensionSearchPattern(), SearchOption.TopDirectoryOnly);
 
@@ -84,58 +90,62 @@ namespace AssetImporterToolkit
             if (configurationAssetFilesFound)
             {
                 // Getting first asset found and aggigning it as a asset importer configuration asset.
-                assetImporterConfiguration = AssetDatabase.LoadAssetAtPath<ConfigurationAsset>(assetImportConfigurationEntries[0]);
+                importerConfigurationAsset = AssetDatabase.LoadAssetAtPath<ConfigurationAsset>(assetImportConfigurationEntries[0]);
             }
             else
             {
-                // Finding the root directory of the current file path and converting it to a lower cased string.
-                string rootDirectory = Directory.GetParent(assetDirectory).ToString().ToLower();
-
-                // Checking if the root directory was found.
-                bool rootDirectoryExist = !string.IsNullOrEmpty(rootDirectory);
-
-                // Checking if the root directory exist and search for configuration asset files.
-                if(rootDirectoryExist)
-                {
-                    // Searching for configuration asset types in the root directory.
-                    string[] configurationAssetFileEntries = Directory.GetFiles(rootDirectory, Utilities.GetAssetExtensionSearchPattern(), SearchOption.TopDirectoryOnly);
-
-                    // Checking if configuration the asset file entries were found in the root directory.
-                    bool configurationAssetFileEntriesFound = configurationAssetFileEntries.Length > 0;
-
-                    // Checking if configuration assets exist.
-                    if (configurationAssetFileEntriesFound)
-                    {
-                        // Getting the first configuration asset file in the entries and assign it as the asset importer configuration asset file.
-                        assetImporterConfiguration = AssetDatabase.LoadAssetAtPath<ConfigurationAsset>(configurationAssetFileEntries[0]);
-
-                        // Checking if the asset importer configuration has debug enabled.
-                        if(assetImporterConfiguration.AllowDebug)
-                        {
-                            // This message that will be logged to the console.
-                            string logMessage = "Found : " + configurationAssetFileEntries.Length + " entries named : " + configurationAssetFileEntries[0] + " with : " + assetImporterConfiguration.GetIncludedAssetsDirectoryLibraryCount() + " included directories.";
-
-                            // Logging a new message to the console. 
-                            Debugger.Log(className : classLogName, message : logMessage);
-                        }
-                    }
-                }
-                else
-                {
-                    // Checking if the asset importer configuration has debug enabled for logging messages to the unity console window.
-                    if (assetImporterConfiguration.AllowDebug)
-                    {
-                        // This message that will be logged to the console.
-                        string logMessage = "This folder is not included for import configuration. create a new import configurtation asset file or add this directory to an existing configuration asset file.";
-
-                        // Logging a new warning message to the unity console.
-                        Debugger.LogWarning(className : classLogName, message : logMessage);
-                    }
-                }
+                // Trying to find a configuration asset in parent directory if it doesn't exist in current directory.
+                importerConfigurationAsset = GetConfigurationAssetInParentDirectory(assetDirectory);
             }
 
             // Returning the requested asset import configuration asset file.
-            return assetImporterConfiguration;
+            return importerConfigurationAsset;
+        }
+
+        /// <summary>
+        /// This function finds and return a configuration asset file in parent directory of the given path.
+        /// </summary>
+        /// <param name="assetDirectory">This function takes in a string parameter as a asset directory.</param>
+        /// <returns>Returns a configuration asset file from the given asset directory.</returns>
+        public static ConfigurationAsset GetConfigurationAssetInParentDirectory(string assetDirectory)
+        {
+            // Defining an assigned importer configuration asset.
+            ConfigurationAsset importerConfigurationAsset;
+
+            // Finding the root directory of the current file path and converting it to a lower cased string.
+            string rootDirectory = Directory.GetParent(assetDirectory).ToString().ToLower();
+
+            // Checking if the root directory was found.
+            bool rootDirectoryExist = !string.IsNullOrEmpty(rootDirectory);
+
+            // Checking if the root directory exist and search for configuration asset files.
+            if (rootDirectoryExist)
+            {
+                // Searching for configuration asset types in the root directory.
+                string[] configurationAssetFileEntries = Directory.GetFiles(rootDirectory, Utilities.GetAssetExtensionSearchPattern(), SearchOption.TopDirectoryOnly);
+
+                // Checking if configuration the asset file entries were found in the root directory.
+                bool configurationAssetFileEntriesFound = configurationAssetFileEntries.Length > 0;
+
+                // Checking if configuration assets exist.
+                if (configurationAssetFileEntriesFound)
+                {
+                    // Getting the first configuration asset file in the entries and assign it as the asset importer configuration asset file.
+                    importerConfigurationAsset = AssetDatabase.LoadAssetAtPath<ConfigurationAsset>(configurationAssetFileEntries[0]);
+                }
+                else
+                {
+                    // Getting the first configuration asset file in the entries and assign it as the asset importer configuration asset file.
+                    importerConfigurationAsset = null;
+                }
+            }
+            else
+            {
+                importerConfigurationAsset = null;
+            }
+
+            // Returning the requested asset import configuration asset file.
+            return importerConfigurationAsset;
         }
 
         /// <summary>
@@ -165,10 +175,10 @@ namespace AssetImporterToolkit
                 if (configurationIncludesDirectories)
                 {
                     // Getting a list of all included asset directories in the configuration asset file.
-                    AssetLibrary<string> includedAssetDirectories = configurationAsset.GetIncludedAssetsDirectoryLibrary();
+                    AssetsDirectoryLibrary includedAssetDirectoryLibrary = configurationAsset.GetIncludedAssetsDirectoryLibrary();
 
                     // Checking through all the found included directories assigned in the configuration asset file.
-                    foreach (string directory in includedAssetDirectories.AssetDirectoryList)
+                    foreach (string directory in includedAssetDirectoryLibrary.Directories)
                     {
                         // Reimporting assets from the included directory.
                         AssetsReimporter.ReimportAssetsAtPath(directory, configurationAsset);

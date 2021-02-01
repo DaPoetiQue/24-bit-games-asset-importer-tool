@@ -35,7 +35,7 @@ namespace AssetImporterToolkit
         /// This is the initialized strings array list of included assets directory path that the configuration file will affect.
         /// </summary>
         [Space(5)]
-        public AssetLibrary<string> IncludedAssetDirectoryLibrary = new AssetLibrary<string>() { AssetDirectoryList = new List<string>() };
+        public AssetsDirectoryLibrary IncludedAssetDirectoryLibrary = new AssetsDirectoryLibrary() { Directories = new List<string>() };
 
         /// <summary>
         /// When enabled, the configuration asset file will log messages to the console.
@@ -54,13 +54,16 @@ namespace AssetImporterToolkit
         public void AddConfigurationAssetIncludedDirectoryToLibrary(string assetDirectory)
         {
             // This line checks if the asset path is already included with the configuration asset file.
-            bool pathNotPreviouslyInclueded = !IncludedAssetDirectoryLibrary.AssetDirectoryList.Contains(assetDirectory);
+            bool pathNotPreviouslyIncluded = !IncludedAssetDirectoryLibrary.Directories.Contains(assetDirectory);
 
             // Checking if path has not been included then add the path to the includede asset directory library list.
-            if (pathNotPreviouslyInclueded)
+            if (pathNotPreviouslyIncluded)
             {
+                // Converting the asset directory to a lower case.
+                string lowerCasedAssetDirectory = assetDirectory.ToLower();
+
                 // Adding the directory to the asset importer configuration asset file.
-                IncludedAssetDirectoryLibrary.AssetDirectoryList.Add(assetDirectory);
+                IncludedAssetDirectoryLibrary.Directories.Add(lowerCasedAssetDirectory);
             }
         }
 
@@ -68,7 +71,7 @@ namespace AssetImporterToolkit
         /// This function returns all the included assets directories that are currenlty added to the configuration asset file.
         /// </summary>
         /// <returns>Returns a string list of all the included assets directories.</returns>
-        public AssetLibrary<string> GetIncludedAssetsDirectoryLibrary()
+        public AssetsDirectoryLibrary GetIncludedAssetsDirectoryLibrary()
         {
             // Returning the asset library.
             return IncludedAssetDirectoryLibrary;
@@ -81,7 +84,7 @@ namespace AssetImporterToolkit
         public int GetIncludedAssetsDirectoryLibraryCount()
         {
             // Returning the amount of included asset directories.
-            return IncludedAssetDirectoryLibrary.AssetDirectoryList.Count;
+            return IncludedAssetDirectoryLibrary.Directories.Count;
         }
 
         #endregion

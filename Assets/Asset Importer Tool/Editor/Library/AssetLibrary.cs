@@ -9,15 +9,14 @@ namespace AssetImporterToolkit
     /// <summary>
     /// This is the asset library for storing asset related data.
     /// </summary>
-    /// <typeparam name="T">Takes in a object type, i.e. string</typeparam>
     [Serializable]
-    public struct AssetLibrary<T>
+    public struct AssetsDirectoryLibrary
     {
         /// <summary>
-        /// This is a list for storing asset directory.
+        /// This is a list of string for storing assets directory.
         /// </summary>
         [Header("Asset Library")]
-        [Space(10)]
-        public List<T> AssetDirectoryList;
+        [Space(5)]
+        public List<string> Directories;
     }
 }

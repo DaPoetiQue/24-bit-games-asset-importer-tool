@@ -1,4 +1,5 @@
 ﻿// Used libraries.
+using UnityEngine;
 using UnityEditor;
 
 // Namespace.
@@ -10,38 +11,121 @@ namespace AssetImporterToolkit
      // This function is used to add configuration settings to imported audio assets.
     public class AssetImporter : AssetPostprocessor
     {
-        // Importer configuration asset file.
-        private static ConfigurationAsset importConfiguration = null;
+        // This log name is used when logging messages to the debbuger.
+        private static string classLogName = "Asset Importer";
 
         // This function is used to add configuration settings to imported texture assets.
         private void OnPreprocessTexture()
         {
+            // Defining a new configuration asset.
+            ConfigurationAsset textureImporterConfiguration;
+
             // Getting asset path directry in lower case type.
-            string assetDirectory = AssetImportDirectory.GetAssetDirectory(assetPath.ToLower());
+            string assetDirectory = AssetImportDirectory.GetAssetDirectory(assetImporter.assetPath.ToLower());
 
             // Getting import configuration asset file for the imported texture asset.
-            importConfiguration = Configurations.GetAssetImportConfiguration(assetDirectory);
+            textureImporterConfiguration = Configurations.GetAssetImportConfiguration(assetDirectory);
 
-            // Post processing asset file using import settings.
-            AssetImporterPostProcessor.ProcessTextureAsset(importConfiguration, this);
+            // Validating the import configuration asset.
+            bool configurationAssetIsValid = AssetImportDirectory.IsValidConfigurationAsset(textureImporterConfiguration);
+
+            // Checking if import configurations asset file is valid.
+            if (configurationAssetIsValid)
+            {
+                // Checking if the imported asset directories is included or affected by the configuration asset.
+                if(textureImporterConfiguration.IncludedAssetDirectoryLibrary.Directories.Contains(assetDirectory))
+                {
+                    // Post processing asset file using import settings.
+                    AssetImporterPostProcessor.ProcessTextureAsset(textureImporterConfiguration, this);
+
+                    // Checking if the configuration asset allow debug is enabled.
+                    if (textureImporterConfiguration.AllowDebug)
+                    {
+                        // This message that will be logged to the unity's debug console.
+                        string logMessage = "The imported texture asset(s) has been configured successfully.";
+
+                        // Logging a new message to the unity debug console.
+                        Debugger.Log(className: classLogName, message: logMessage);
+                    }
+                }
+                else
+                {
+                    // Checking if the configuration asset allow debug is enabled.
+                    if (textureImporterConfiguration.AllowDebug)
+                    {
+                        // This message that will be logged to the unity's debug console.
+                        string logMessage = "Directory : " + assetDirectory + " is not included or affected by the import configuration asset.";
+
+                        // Logging a new warning message to the unity debug console.
+                        Debugger.LogWarning(className: classLogName, message: logMessage);
+                    }
+                }
+            }
+            else
+            {
+                return;
+            }
         }
 
         // This function is used to add configuration settings to imported audio assets.
         private void OnPreprocessAudio()
         {
+            // Defining a new import configuration asset.
+            ConfigurationAsset audioImportConfiguration ;
+
             // Getting asset path directry in lower case type.
-            string assetDirectory = AssetImportDirectory.GetAssetDirectory(assetPath.ToLower());
+            string assetDirectory = AssetImportDirectory.GetAssetDirectory(assetImporter.assetPath.ToLower());
 
             // Getting import configuration asset file for the imported texture asset.
-            importConfiguration = Configurations.GetAssetImportConfiguration(assetDirectory);
+            audioImportConfiguration = Configurations.GetAssetImportConfiguration(assetDirectory);
 
-            // Post processing asset file using import settings.
-            AssetImporterPostProcessor.ProcessAudioAsset(importConfiguration, this);
+            // Validating the import configuration asset.
+            bool configurationAssetIsValid = AssetImportDirectory.IsValidConfigurationAsset(audioImportConfiguration);
+
+            // Checking if import configurations asset file is valid.
+            if (configurationAssetIsValid)
+            {
+                // Checking if the imported asset directories is included or affected by the configuration asset.
+                if (audioImportConfiguration.IncludedAssetDirectoryLibrary.Directories.Contains(assetDirectory))
+                {
+                    // Post processing asset file using import settings.
+                    AssetImporterPostProcessor.ProcessAudioAsset(audioImportConfiguration, this);
+
+                    // Checking if the configuration asset allow debug is enabled.
+                    if (audioImportConfiguration.AllowDebug)
+                    {
+                        // This message that will be logged to the unity's debug console.
+                        string logMessage = "The imported audio asset(s) has been configured successfully.";
+
+                        // Logging a new message to the unity debug console.
+                        Debugger.Log(className: classLogName, message: logMessage);
+                    }
+                }
+                else
+                {
+                    // Checking if the configuration asset allow debug is enabled.
+                    if (audioImportConfiguration.AllowDebug)
+                    {
+                        // This message that will be logged to the unity's debug console.
+                        string logMessage = "Directory : " + assetDirectory + " is not included or affected by the import configuration asset.";
+
+                        // Logging a new warning message to the unity debug console.
+                        Debugger.LogWarning(className: classLogName, message: logMessage);
+                    }
+                }
+            }
+            else
+            {
+                return;
+            }
         }
 
         // This function is used to add configuration asset file's included or affected asset directories.
         private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
         {
+            // Defining a new import configuration asset.
+            ConfigurationAsset importConfiguration;
+
             // Checking through the imported project assets. 
             foreach (string assetPath in importedAssets)
             {
@@ -52,7 +136,7 @@ namespace AssetImporterToolkit
                 if (assetHasRequiredExtension)
                 {
                     // Getting import configuration asset file.
-                    importConfiguration = Configurations.GetAssetImportConfiguration(assetPath);
+                    importConfiguration = AssetDatabase.LoadAssetAtPath<ConfigurationAsset>(assetPath);
 
                     // Checkig if asset importer configuration file has been loaded successfully.
                     if (importConfiguration)
