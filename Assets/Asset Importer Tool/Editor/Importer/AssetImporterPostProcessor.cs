@@ -62,15 +62,11 @@ namespace AssetImporterToolkit
             }
             else
             {
-                // Checking if debug is enabled.
-                if (importConfiguration.AllowDebug)
-                {
-                    // Warning message to log in the unity debug console.
-                    string logWarningMessage = "This folder is not affected by the asset importer tool. add the folder path to the included directories path list of a configuration asset file.";
+                // Warning message to log in the unity debug console.
+                string logWarningMessage = "This folder is not affected by the asset importer tool. add the folder path to the included directories path list of a configuration asset file.";
 
-                    // Logging a new message to the unity console.
-                    Debugger.LogWarning(className: classLogName, message: logWarningMessage);
-                }
+                // Logging a new message to the unity console.
+                Debugger.LogWarning(className: classLogName, message: logWarningMessage);
             }
         }
 
@@ -122,15 +118,11 @@ namespace AssetImporterToolkit
             }
             else
             {
-                // Checking if debug is enabled.
-                if(importConfiguration.AllowDebug)
-                {
-                    // Warning message to log in the unity debug console.
-                    string logWarningMessage = "This folder is not affected by the asset importer tool. add the folder path to the included directories path list of a configuration asset file.";
+                // Warning message to log in the unity debug console.
+                string logWarningMessage = "This folder is not affected by the asset importer tool. add the folder path to the included directories path list of a configuration asset file.";
 
-                    // Logging a new warning message to the unity debug console.
-                    Debugger.LogWarning(className: classLogName, message: logWarningMessage);
-                }
+                // Logging a new warning message to the unity debug console.
+                Debugger.LogWarning(className: classLogName, message: logWarningMessage);
             }
         }
     }
