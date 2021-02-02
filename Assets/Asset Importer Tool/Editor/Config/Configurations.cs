@@ -1,4 +1,5 @@
 ﻿// Used libraries.
+using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 
@@ -149,6 +150,53 @@ namespace AssetImporterToolkit
         }
 
         /// <summary>
+        /// This function is for getting all project configuration asset files.
+        /// </summary>
+        /// <returns>This function returns a list of configuration asset files.</returns>
+        public static List<string> GetAllConfigurationAssetFileDirectories()
+        {
+            //
+            List<string> configurationAssetFileDirectories = new List<string>();
+
+            // Getting all the project import configuration asset files.
+            string[] projectImportConfigurationAssetFiles = Directory.GetFiles("Assets/", Utilities.GetAssetExtensionSearchPattern(), SearchOption.AllDirectories);
+
+            // Checking if the import configuration ssset files exist in the project's assets directories.
+            bool importConfigurationAssetFilesExist = projectImportConfigurationAssetFiles.Length > 0;
+
+            // Checking if files exist.
+            if (importConfigurationAssetFilesExist)
+            {
+                // Going through found project import configuration asset files.
+                foreach (string assetFilePath in projectImportConfigurationAssetFiles)
+                {
+                    // Adding configuration asset files to the importer configuration asset list.
+                    configurationAssetFileDirectories.Add(assetFilePath);
+                }
+            }
+            else
+            {
+                // Warning message to log in unity debug console window
+                string warningLogMessage = "There is no import configuration asset in this project. Create a new configuration asset file and try again.";
+
+                // Log
+                Debugger.LogWarning(className : classLogName, warningLogMessage);
+            }
+
+            return configurationAssetFileDirectories;
+        }
+
+        /// <summary>
+        /// This function is used to determine the amount of import configuration asset files in the project.
+        /// </summary>
+        /// <returns>This function returns the amount of import configuration asset files in the project.</returns>
+        public static int GetAllConfigurationAssetFilesCount()
+        {
+            // Returning all configuration asset files count.
+            return GetAllConfigurationAssetFileDirectories().Count;
+        }
+
+        /// <summary>
         /// This function finds and load a configuration asset from a give asset directory.
         /// </summary>
         /// <param name="assetDirectory">The function takes in a string parameter for the required asset directory</param>
@@ -165,8 +213,11 @@ namespace AssetImporterToolkit
         /// <param name="configurationAsset">This function takes in a configuration asset file and use the data to find and update project affected assets.</param>
         public static void OnUpdateIncludedAssetsUsingConfiguration(ConfigurationAsset configurationAsset)
         {
+            // Checking if configuration file is valid
+            bool isValidConfigurationAssetFile = AssetImportDirectory.IsValidConfigurationAsset(configurationAsset);
+
             // Checking if a configuration asset is not null.
-            if (AssetImportDirectory.IsValidConfigurationAsset(configurationAsset))
+            if (isValidConfigurationAssetFile)
             {
                 // Checking if the configuration asset's importer assets library has included directories assigned.
                 bool configurationIncludesDirectories = configurationAsset.GetIncludedAssetsDirectoryLibraryCount() > 0;
@@ -183,9 +234,6 @@ namespace AssetImporterToolkit
                         // Reimporting assets from the included directory.
                         AssetsReimporter.ReimportAssetsAtPath(directory, configurationAsset);
                     }
-
-                    // Refreshing the asset database after re-importing the directory assets.
-                    AssetDatabase.Refresh(ImportAssetOptions.Default);
                 }
                 else
                 {

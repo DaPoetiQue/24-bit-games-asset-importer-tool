@@ -29,7 +29,7 @@ namespace AssetImporterToolkit
                 // Going through found assets in the directory.
                 foreach (string importableAsset in importableAssetFilesEntries)
                 {
-                    // Reimport asset.
+                    // Reimport an asset at the give directory.
                     AssetDatabase.ImportAsset(importableAsset);
 
                     // Checking if configuration aaset's debug is enabled.
@@ -42,6 +42,9 @@ namespace AssetImporterToolkit
                         Debugger.Log(className : classLogName, message : logMessage);
                     }
                 }
+
+                // Refreshing the asset data base.
+                AssetDatabase.Refresh();
             }
             else
             {   

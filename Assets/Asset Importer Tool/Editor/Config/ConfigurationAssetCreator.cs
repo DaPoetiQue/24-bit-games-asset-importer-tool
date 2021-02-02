@@ -34,8 +34,8 @@ namespace AssetImporterToolkit
                 // Creating a new scriptable object import configuration asset to the import configuration path.
                 AssetDatabase.CreateAsset(assetImportConfigurationAsset, importConfigurationAssetSavePath);
 
-                // Initializing the newly created import configuration asset and assigning included directories.
-                Configurations.AddConfigurationIncludedAssetDirectory(assetImportConfigurationAsset, configurationAssetCreationDirectory);
+                // Save data base assets.
+                AssetDatabase.SaveAssets();
             }
             else
             {

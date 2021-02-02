@@ -1,5 +1,4 @@
 ﻿// Used libraries.
-using UnityEngine;
 using UnityEditor;
 
 // Namespace.
@@ -48,22 +47,6 @@ namespace AssetImporterToolkit
                         Debugger.Log(className: classLogName, message: logMessage);
                     }
                 }
-                else
-                {
-                    // Checking if the configuration asset allow debug is enabled.
-                    if (textureImporterConfiguration.AllowDebug)
-                    {
-                        // This message that will be logged to the unity's debug console.
-                        string logMessage = "Directory : " + assetDirectory + " is not included or affected by the import configuration asset.";
-
-                        // Logging a new warning message to the unity debug console.
-                        Debugger.LogWarning(className: classLogName, message: logMessage);
-                    }
-                }
-            }
-            else
-            {
-                return;
             }
         }
 
@@ -101,22 +84,6 @@ namespace AssetImporterToolkit
                         Debugger.Log(className: classLogName, message: logMessage);
                     }
                 }
-                else
-                {
-                    // Checking if the configuration asset allow debug is enabled.
-                    if (audioImportConfiguration.AllowDebug)
-                    {
-                        // This message that will be logged to the unity's debug console.
-                        string logMessage = "Directory : " + assetDirectory + " is not included or affected by the import configuration asset.";
-
-                        // Logging a new warning message to the unity debug console.
-                        Debugger.LogWarning(className: classLogName, message: logMessage);
-                    }
-                }
-            }
-            else
-            {
-                return;
             }
         }
 
@@ -146,6 +113,6 @@ namespace AssetImporterToolkit
                     }
                 }
             }
-        }  
+        }
     }
 }
