@@ -24,15 +24,14 @@ namespace AssetImporterToolkit
                 // Checking if a configuration asset file is selected in the project.
                 bool configurationAssetSelected = configurationAsset.Length > 0;
 
-                // Checking if a configuration asset file is selected in the project.
+                // Checking if a configuration asset selected.
                 if (configurationAssetSelected)
                 {
-                    // Show editor pop up window.
-                    PopUpEditorWindow.OpenConfigurationADisplayDialogWindow("Unity Asset Importer.", "Update configuration assets", configurationAsset[0]);
-                    // PopUpEditorWindow.OpenADisplayDialogWindow("Update project assets", "apply configuration and update assets.", "", configurationAsset[0]);
+                    // Log
+                    Debug.Log("Selected : " + configurationAsset.Length + " configuration Files");
 
                     // Updating imported assets retroactively using the currently selected configuration asset at the first index.
-                    //Configurations.OnUpdateIncludedAssetsUsingConfiguration(configurationAsset[0]);
+                    Configurations.OnUpdateIncludedAssetsUsingConfiguration(configurationAsset[0]);
                 }
             }
         }
